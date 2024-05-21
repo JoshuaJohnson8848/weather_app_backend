@@ -4,6 +4,8 @@ const dotenv = require('dotenv');
 const app = express();
 const bodyParser = require('body-parser');
 
+const weatherRouter = require('./router/weather');
+
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
@@ -26,6 +28,8 @@ app.use((error, req, res, next) => {
   res.status(status).json({ message: message, data: data });
   next();
 });
+
+app.use('',weatherRouter);
 
 mongoose
   .connect(process.env.MONGO_URI)
