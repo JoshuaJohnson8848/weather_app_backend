@@ -1,7 +1,8 @@
 const { getLatAndLon, getCurrentDayWeather, getHourlyWeather } = require('../utils/API_Calls');
 const { cityName, stateCode, limit, countryCode } = require('../utils/API_URL');
 const apiKey = require('../config/credentials');
-const moment = require('moment')
+const moment = require('moment');
+const Weather = require('../models/weather');
 
 exports.currentDayWeather = async (req, res, next) => {
   try {
@@ -18,6 +19,29 @@ exports.currentDayWeather = async (req, res, next) => {
     const temp_Celsius = Math.floor(currentDay?.main?.temp - 273.15);
     const feelsLike_Celsius = Math.floor(currentDay?.main?.feels_like - 273.15);
     const sunset = moment.unix(currentDay?.sys?.sunset).utcOffset('+05:30').format('HH:mm');
+
+    const existData = await Weather.findOne({date:formattedDate});
+
+    if(!existData){
+      const weatherData = new Weather({
+        state: state,
+        city: city,
+        weather: weather,
+        desc: desc,
+        temp_Celsius: temp_Celsius,
+        feelsLike_Celsius: feelsLike_Celsius,
+        sunset: sunset,
+        date: formattedDate
+      })
+
+      let created = await weatherData.save();
+      
+      if(!created){
+        const error = new Error('Not Created');
+        error.status = 422;
+        throw error;
+      }
+    }
 
     res.status(200).json({state, city, weather, desc, temp_Celsius, feelsLike_Celsius, sunset, date: formattedDate,icon})
 
