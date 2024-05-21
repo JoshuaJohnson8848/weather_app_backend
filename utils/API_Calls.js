@@ -27,6 +27,7 @@ async function getHourlyWeather(lat,lon,apiKey) {
     try {
         const response = await axios.get(hourlyAPI(lat,lon,apiKey));
         const data = response?.data;
+        console.log(data);
         return data;
     } catch (error) {
         console.log(error);
@@ -34,4 +35,4 @@ async function getHourlyWeather(lat,lon,apiKey) {
     }
 }
 
-module.exports = { getLatAndLon, getCurrentDayWeather };
+module.exports = { getLatAndLon, getCurrentDayWeather, getHourlyWeather };
